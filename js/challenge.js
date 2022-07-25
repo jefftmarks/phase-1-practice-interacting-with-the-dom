@@ -19,11 +19,11 @@ document.addEventListener('DOMContentLoaded', () => {
         counter.innerText = count;
     }
 
-    //create interval manager and invoke setInterval
+    //create interval manager and invoke to initiate setInterval
     // (https://stackoverflow.com/questions/10935026/how-to-clear-interval-and-set-it-again)
     let intervalID = null;
 
-    function intervalManager(trigger) {
+    function intervalManager(trigger) { //trigger is boolean: true or false
         if (trigger) {
             intervalID = setInterval(increaseCounter, 1000);
         } else {
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    intervalManager(true, increaseCounter, 1000);
+    intervalManager(true);
 
 
     //~~~~~~~~~~Deliverable 2~~~~~~~~~~
@@ -53,34 +53,47 @@ document.addEventListener('DOMContentLoaded', () => {
     //grab like button
     const heart = document.querySelector('#heart');
 
-    //create function to push counter value into array
-    function populateArray() {
-        array.push(counter.innerText);         
-        }
-
     //add event listener
     heart.addEventListener('click', () => {
+        let currentValue = counter.innerText;
+
         //grab ul
         let ul = document.querySelector('ul');
-    
-        //push current counter value to main array
-        populateArray();
-        //filter array to search for number of instances current counter value has appeared. Find the length of the new array returned by filter()
-        let likeCount = array.filter((num) => num === counter.innerText).length;
-        //create message to reflect like count
-        let message1 = `${counter.innerText} has been liked ${likeCount} time`;
-        let message2 = `${counter.innerText} has been liked ${likeCount} times`;
 
+        //push current counter value to main array
+        array.push(currentValue);
+
+        //filter array to search for number of instances current counter value has appeared. Find the length of the new array returned by filter()
+        let likeCount = array.filter((num) => num === currentValue).length;
+
+        //create message to reflect like count
+        let message1 = `${currentValue} has been liked ${likeCount} time`;
+        let message2 = `${currentValue} has been liked ${likeCount} times`;
+
+        //find the FIRST number in the array of values that is greater than the current value
+        //if no number, greaterNum = undefined
+        //need to parseInt num because array elements are strings
+        let greaterNum = array.find((num) => parseInt(num) > currentValue);
+        //grab (if it exists) the node with the ID of the greaterNum
+        console.log(`current value: ${currentValue}`);
+        console.log(`greater value: ${greaterNum}`);
+        console.log(array);
+        let greaterNode = document.getElementById(greaterNum);
+        
         //set li inner text to message and append to ul
         //use conditional for time(s) distinction
         if (likeCount === 1) {
             let li = document.createElement('li'); //create new li
-            li.id = counter.innerText; //give unique ID of counter value
+            li.id = currentValue; //give unique ID of counter value
             li.innerText = message1; //give message one
-            ul.appendChild(li); //append to ul
+            if (greaterNum) {
+                ul.insertBefore(li, greaterNode);
+            } else {
+                ul.appendChild(li); //append to ul
+            }
         } else {
             //if li already exists, grab the li with the ID of the count value and insert message 2
-            document.getElementById(counter.innerText).innerText = message2;
+            document.getElementById(currentValue).innerText = message2;
         }
         
     });
@@ -132,6 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
         commentDiv.appendChild(p);
         form.reset();
     })
+
+    //idea
+    /* to sort by number order, run a find on array to find first number greater than the counter number, then do a nodebefore etc
+    */
 
 
 });
